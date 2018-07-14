@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "673079962851",
+    "firebase_url": "https://musicsocial-d1009.firebaseio.com",
+    "project_id": "musicsocial-d1009",
+    "storage_bucket": "musicsocial-d1009.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673079962851:android:92b238ae00a1347b",
+        "android_client_info": {
+          "package_name": "android.devs.vlorente.tfg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "673079962851-jq47glbuem4ffqa7dlanl7ikaorqnbbj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "android.devs.vlorente.tfg",
+            "certificate_hash": "2249d8bca8ecb45c85d793b12980d27b394e4be2"
+          }
+        },
+        {
+          "client_id": "673079962851-vsjcoln69g2lake16om7mnvo3vtca24k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy9NhfqRKw31f1OphsubefrMBwKqd3oek"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "673079962851-f6o55r894vk265g1peefovu5p9nc3l49.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
