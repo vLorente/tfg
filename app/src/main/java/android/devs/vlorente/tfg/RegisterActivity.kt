@@ -64,7 +64,7 @@ class RegisterActivity : AppCompatActivity() {
         if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(surname) &&!TextUtils.isEmpty(email) &&!TextUtils.isEmpty(password) ){
             progressBar.visibility=View.VISIBLE
 
-            val myuser = User(name,surname,email,password)
+            val myuser = User(name,surname,email,password,null)
 
             auth.createUserWithEmailAndPassword(email,password)
                     .addOnCompleteListener(this){
@@ -72,7 +72,7 @@ class RegisterActivity : AppCompatActivity() {
                         if(task.isComplete){
                             val user:FirebaseUser?=auth.currentUser
                             verifyEmail(user)
-
+                            myuser.uid = auth.currentUser?.uid
                             dbReference.add(myuser)
                             action()
                         }

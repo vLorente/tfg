@@ -3,9 +3,12 @@ package android.devs.vlorente.tfg
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -34,6 +37,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     //Init views
     lateinit var googleSignInButton: SignInButton
     lateinit var facebookSignInButton: LoginButton
+    lateinit var txtEmail: EditText
+    lateinit var txtPassword: EditText
+    lateinit var progressBar: ProgressBar
 
     //Request codes
     val GOOGLE_LOG_IN_RC = 1
@@ -53,6 +59,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
         googleSignInButton = findViewById<View>(R.id.googleButton) as SignInButton
         facebookSignInButton = findViewById<View>(R.id.facebookButton) as LoginButton
+        txtEmail = findViewById(R.id.login_email)
+        txtPassword = findViewById(R.id.login_password)
+        progressBar = findViewById(R.id.login_progressBar)
+
         googleSignInButton.setOnClickListener(this)
         firebaseAuth = FirebaseAuth.getInstance()
         // Configure Google Sign In
@@ -96,6 +106,34 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         googleLogin()
     }
 
+    fun forgotPassword(view: View){
+
+    }
+    //Login con email y contraseña
+    fun login(view: View){
+
+    }
+
+    private fun loginUser(){
+        val email:String = txtEmail.text.toString()
+        val password:String = txtPassword.text.toString()
+
+        if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
+            progressBar.visibility = View.VISIBLE
+
+            firebaseAuth?.signInWithEmailAndPassword(email, password)
+                    ?.addOnCompleteListener(this) { task ->
+
+                        if (task.isComplete) {
+                            ShowMain()
+                        }
+                    }
+        }else{
+            progressBar.visibility = View.GONE
+            Toast.makeText(this,R.string.error_empty_fields,Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun googleLogin() {
         Log.i(TAG, "Starting Google LogIn Flow.")
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
@@ -122,14 +160,16 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
+        progressBar.visibility = View.VISIBLE
         Log.i(TAG, "Authenticating user with firebase.")
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
         firebaseAuth?.signInWithCredential(credential)?.addOnCompleteListener(this) { task ->
             Log.i(TAG, "Firebase Authentication, is result a success? ${task.isSuccessful}.")
             if (task.isSuccessful) {
                 // Sign in success, update UI with the signed-in user's information
-                startActivity(Intent(this, MainActivity::class.java))
+                ShowMain()
             } else {
+                progressBar.visibility = View.GONE
                 // If sign in fails, display a message to the user.
                 Log.e(TAG, "Authenticating with Google credentials in firebase FAILED !!")
             }
@@ -137,6 +177,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun handleFacebookAccessToken(token: AccessToken) {
+        progressBar.visibility = View.VISIBLE
         Log.d(TAG, "handleFacebookAccessToken:" + token)
         val credential = FacebookAuthProvider.getCredential(token.token)
         firebaseAuth!!.signInWithCredential(credential)
@@ -145,8 +186,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success")
                         val user = firebaseAuth!!.currentUser
-                        startActivity(Intent(this, MainActivity::class.java))
+                        ShowMain()
                     } else {
+                        progressBar.visibility = View.GONE
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.getException())
                         Toast.makeText(this, "Authentication failed.",
@@ -157,6 +199,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun ShowRegister(){
         startActivity(Intent(this,RegisterActivity::class.java))
+    }
+    private fun ShowMain(){
+        startActivity(Intent(this,MainActivity::class.java))
     }
 
 }
