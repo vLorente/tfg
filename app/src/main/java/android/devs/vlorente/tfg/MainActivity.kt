@@ -1,5 +1,6 @@
 package android.devs.vlorente.tfg
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -7,18 +8,26 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import com.facebook.login.LoginManager
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private val TAG = "MainActivity"
     private val manager = supportFragmentManager
+    private var auth: FirebaseAuth? = null
+    private var googleApiClient: GoogleApiClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-
+        //setSupportActionBar(toolbar)
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -26,6 +35,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        //Google login silencioso
+        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+        googleApiClient = GoogleApiClient.Builder(this)
+                .enableAutoManage(this  /* OnConnectionFailedListener */) { }
+                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
+                .build()
+        //Fin google login
+
+        auth = FirebaseAuth.getInstance()
+        var firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            //Comprobamos que tenemos un usuario autenticado
+            val user = firebaseAuth.currentUser
+            if (user != null) {
+                //En caso de tenerlo pintamos sus datos
+                Toast.makeText(this, "Existe una sesión iniciada",Toast.LENGTH_SHORT).show()
+            } else {
+                //En caso de que no tengamos vamos al login
+                ShowLoginActivity()
+            }
+        }
 
         ShowFragmentMain()
 
@@ -72,11 +106,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_manage -> {
 
             }
-            R.id.nav_share -> {
+            R.id.nav_config -> {
 
             }
-            R.id.nav_send -> {
-
+            R.id.nav_logOut -> {
+                logOut()
             }
 
         }
@@ -85,7 +119,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun ShowFragmentMain(){
+    private fun logOut() {
+        FirebaseAuth.getInstance().signOut()
+        LoginManager.getInstance().logOut()
+        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback { status ->
+            if (status.isSuccess) {
+                ShowLoginActivity()
+            } else {
+                Toast.makeText(applicationContext, R.string.not_logout_google, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun ShowFragmentMain(){
         val transaction = manager.beginTransaction()
         val fragment = FragmentMain()
         transaction.replace(R.id.fragment_holder,fragment)
@@ -93,11 +139,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         transaction.commit()
     }
 
-    fun ShowFragmentPlayer(){
+    private fun ShowFragmentPlayer(){
         val transaction = manager.beginTransaction()
         val fragment = FragmentPlayer()
         transaction.replace(R.id.fragment_holder,fragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    private fun ShowLoginActivity(){
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
     }
 }

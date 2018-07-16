@@ -12,4 +12,18 @@
     <string name="menu_title1">Opciones</string>
     <string name="nav_conf">Configuración</string>
     <string name="nav_logOut">Cerrar Sesión</string>
+
+    <string name="facebook_app_id">228848301279452</string>
+    <string name="fb_login_protocol_scheme">fb228848301279452</string>
+    <string name="not_logout_google">No se pudo cerrar sesión</string>
+    <string name="login_label1">o accede mediante</string>
+    <string name="login_email_hint">MiEmail@ejemplo.com</string>
+    <string name="login_pass_hint">Contraseña</string>
+    <string name="login_label2">Acceso</string>
+    <string name="login_button">Acceder</string>
+    <string name="register_button">Registrar</string>
+    <string name="register_surname_hint">Apellidos</string>
+    <string name="register_name_hint">Nombre</string>
+    <string name="error_empty_fields">Debes rellenar todos los campos</string>
+
 </resources>
