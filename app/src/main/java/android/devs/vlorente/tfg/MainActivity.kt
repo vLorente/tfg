@@ -9,20 +9,24 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val TAG = "MainActivity"
     private val manager = supportFragmentManager
-    private var auth: FirebaseAuth? = null
     private var googleApiClient: GoogleApiClient? = null
+    lateinit var firebaseAuth: FirebaseAuth
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,21 +52,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .build()
         //Fin google login
 
-        auth = FirebaseAuth.getInstance()
-        var firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            //Comprobamos que tenemos un usuario autenticado
-            val user = firebaseAuth.currentUser
-            if (user != null) {
-                //En caso de tenerlo pintamos sus datos
-                Toast.makeText(this, "Existe una sesión iniciada",Toast.LENGTH_SHORT).show()
-            } else {
-                //En caso de que no tengamos vamos al login
-                ShowLoginActivity()
-            }
-        }
+        //Listener que escucha los cambios en la atutenticación de firebase
+        firebaseAuth= FirebaseAuth.getInstance()
 
-        ShowFragmentMain()
+    }
 
+    override fun onStart() {
+        super.onStart()
+
+        val currentUser = firebaseAuth.getCurrentUser()
+        updateUI(currentUser)
     }
 
     override fun onBackPressed() {
@@ -121,13 +120,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun logOut() {
         FirebaseAuth.getInstance().signOut()
-        LoginManager.getInstance().logOut()
         Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback { status ->
             if (status.isSuccess) {
                 ShowLoginActivity()
             } else {
                 Toast.makeText(applicationContext, R.string.not_logout_google, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun updateUI(user: FirebaseUser?) {
+        if (user != null) {
+            ShowFragmentMain()
+        } else {
+            ShowLoginActivity()
         }
     }
 
@@ -149,6 +155,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun ShowLoginActivity(){
         val intent = Intent(this, LoginActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
     }
 }

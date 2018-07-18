@@ -10,65 +10,76 @@
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
+        android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/register_img_logo"
         android:layout_width="300dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="47dp"
+        android:layout_height="303dp"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:alpha="0.3"
-        app:layout_constraintBottom_toTopOf="@+id/register_button"
-        app:layout_constraintStart_toStartOf="@+id/register_title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/logo" />
 
     <EditText
         android:id="@+id/register_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="67dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="67dp"
+        android:layout_marginTop="14dp"
         android:allowUndo="false"
         android:ems="10"
         android:hint="@string/login_email_hint"
         android:importantForAutofill="no"
         android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_surname" />
+        app:layout_constraintEnd_toEndOf="@+id/register_name"
+        app:layout_constraintStart_toStartOf="@+id/register_password"
+        app:layout_constraintTop_toBottomOf="@+id/register_name" />
 
     <EditText
         android:id="@+id/register_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="67dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="67dp"
+        android:layout_marginTop="15dp"
         android:ems="10"
         android:hint="@string/login_pass_hint"
         android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="@+id/register_password2"
+        app:layout_constraintStart_toStartOf="@+id/register_password2"
+        app:layout_constraintTop_toBottomOf="@+id/register_email" />
+
+    <EditText
+        android:id="@+id/register_password2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/login_pass_hint2"
+        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_email" />
+        app:layout_constraintTop_toBottomOf="@+id/register_password" />
 
     <TextView
         android:id="@+id/register_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="42dp"
+        android:layout_marginTop="50dp"
         android:fontFamily="serif"
-        android:text="Registro"
+        android:text="@string/register_label"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -80,34 +91,19 @@
         style="@android:style/Widget.Material.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="97dp"
+        android:layout_marginTop="26dp"
         android:text="@string/register_button"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_img_logo" />
-
-    <EditText
-        android:id="@+id/register_surname"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="67dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="67dp"
-        android:ems="10"
-        android:hint="@string/register_surname_hint"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_name" />
+        app:layout_constraintTop_toBottomOf="@+id/register_password2" />
 
     <EditText
         android:id="@+id/register_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="65dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="28dp"
-        android:layout_marginEnd="65dp"
+        android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="@string/register_name_hint"
         android:inputType="textPersonName"

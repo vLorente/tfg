@@ -1,6 +1,7 @@
 package android.devs.vlorente.tfg
 
 import android.content.Intent
+import android.devs.vlorente.tfg.Beans.User
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
@@ -10,20 +11,20 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import com.facebook.AccessToken
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginResult
-import com.facebook.login.widget.LoginButton
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+
+
+
+
 
 /**
  * Created by Valentín Lorente Jiménez on 14/07/2018.
@@ -36,21 +37,19 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     //Init views
     lateinit var googleSignInButton: SignInButton
-    lateinit var facebookSignInButton: LoginButton
     lateinit var txtEmail: EditText
     lateinit var txtPassword: EditText
     lateinit var progressBar: ProgressBar
+    lateinit var dbReference : CollectionReference
 
     //Request codes
     val GOOGLE_LOG_IN_RC = 1
-    val FACEBOOK_LOG_IN_RC = 2
 
     // Google API Client object.
     var googleApiClient: GoogleApiClient? = null
     // Firebase Auth Object.
     var firebaseAuth: FirebaseAuth? = null
 
-    var callbackManager: CallbackManager? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,10 +57,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_login)
 
         googleSignInButton = findViewById<View>(R.id.googleButton) as SignInButton
-        facebookSignInButton = findViewById<View>(R.id.facebookButton) as LoginButton
         txtEmail = findViewById(R.id.login_email)
         txtPassword = findViewById(R.id.login_password)
         progressBar = findViewById(R.id.login_progressBar)
+        dbReference = FirebaseFirestore.getInstance().collection("Users")
 
         googleSignInButton.setOnClickListener(this)
         firebaseAuth = FirebaseAuth.getInstance()
@@ -77,21 +76,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 .build()
 
 
-        callbackManager = CallbackManager.Factory.create();
-        facebookSignInButton.setReadPermissions("email")
-        // Callback registration
-        facebookSignInButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-            override fun onSuccess(loginResult: LoginResult) {
-                // App code
-                handleFacebookAccessToken(loginResult.accessToken);
-            }
-            override fun onCancel() {
-                // App code
-            }
-            override fun onError(exception: FacebookException) {
-                // App code
-            }
-        })
 
 
         //Registro
@@ -102,18 +86,21 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     } //cierre onCreate
 
+
+    //Funciones OnCLick
     override fun onClick(p0: View?) {
         googleLogin()
     }
 
-    fun forgotPassword(view: View){
-
+    fun forgotPassword(view: View) {
+        ShowForgotPassword()
     }
-    //Login con email y contraseña
     fun login(view: View){
-
+        loginUser()
     }
+    //fin funciones onClick
 
+    //Login con email y contraseña
     private fun loginUser(){
         val email:String = txtEmail.text.toString()
         val password:String = txtPassword.text.toString()
@@ -124,8 +111,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             firebaseAuth?.signInWithEmailAndPassword(email, password)
                     ?.addOnCompleteListener(this) { task ->
 
-                        if (task.isComplete) {
+                        if (task.isSuccessful) {
                             ShowMain()
+                        }else{
+                            progressBar.visibility = View.GONE
+                            Toast.makeText(this,getString(R.string.error_data_login), Toast.LENGTH_LONG).show()
                         }
                     }
         }else{
@@ -143,7 +133,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.i(TAG, "Got Result code ${requestCode}.")
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == GOOGLE_LOG_IN_RC) {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             Log.i(TAG, "With Google LogIn, is result a success? ${result.isSuccess}.")
@@ -154,9 +143,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 Toast.makeText(this, "Some error occurred.", Toast.LENGTH_SHORT).show()
             }
         }
-        else {
-            callbackManager!!.onActivityResult(requestCode, resultCode, data)
-        }
+
     }
 
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
@@ -167,41 +154,49 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             Log.i(TAG, "Firebase Authentication, is result a success? ${task.isSuccessful}.")
             if (task.isSuccessful) {
                 // Sign in success, update UI with the signed-in user's information
+                Log.i(TAG, firebaseAuth?.uid!!)
+                CreateUserGoogleSign(firebaseAuth?.uid!!)
                 ShowMain()
             } else {
                 progressBar.visibility = View.GONE
                 // If sign in fails, display a message to the user.
-                Log.e(TAG, "Authenticating with Google credentials in firebase FAILED !!")
+                Log.e(TAG, getString(R.string.error_firebase_google_autentication))
+                Toast.makeText(this,getString(R.string.error_firebase_google_autentication),Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    private fun handleFacebookAccessToken(token: AccessToken) {
-        progressBar.visibility = View.VISIBLE
-        Log.d(TAG, "handleFacebookAccessToken:" + token)
-        val credential = FacebookAuthProvider.getCredential(token.token)
-        firebaseAuth!!.signInWithCredential(credential)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success")
-                        val user = firebaseAuth!!.currentUser
-                        ShowMain()
-                    } else {
-                        progressBar.visibility = View.GONE
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithCredential:failure", task.getException())
-                        Toast.makeText(this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show()
-                    }
-                }
-    }
+
 
     private fun ShowRegister(){
         startActivity(Intent(this,RegisterActivity::class.java))
     }
     private fun ShowMain(){
-        startActivity(Intent(this,MainActivity::class.java))
+        var intent = Intent(this,MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    }
+    private fun ShowForgotPassword(){
+        startActivity(Intent(this,ForgotPasswordActivity::class.java))
+    }
+
+    private fun CreateUserGoogleSign(uid:String){
+
+        dbReference.document(uid).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document = task.result
+                if (document.exists()) {
+                   // Log.d(FragmentActivity.TAG, "DocumentSnapshot data: " + document.data!!)
+                } else {
+                    val user:FirebaseUser? = firebaseAuth?.currentUser
+                    val myuser = User(user?.displayName.toString(),user?.email.toString(),user?.uid)
+                    dbReference.document(myuser.uid!!).set(myuser)
+                }
+            } else {
+                //Log.d(FragmentActivity.TAG, "get failed with ", task.exception)
+            }
+        }
+
     }
 
 }

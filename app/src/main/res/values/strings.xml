@@ -23,7 +23,16 @@
     <string name="login_button">Acceder</string>
     <string name="register_button">Registrar</string>
     <string name="register_surname_hint">Apellidos</string>
-    <string name="register_name_hint">Nombre</string>
+    <string name="register_name_hint">Nombre o Nick</string>
     <string name="error_empty_fields">Debes rellenar todos los campos</string>
+    <string name="forgot_password_button">Enviar contraseña</string>
+    <string name="error_password_reset">No se ha podido resstablecer la contraseña, revise que sea el correo correcto</string>
+    <string name="forgot_password_label">Introduce el correo del cual quieres recupera la contraeña</string>
+    <string name="error_data_login">Correo o contaseña erroneos, intentelo de nuevo.</string>
+    <string name="forgot_password_link">¿Olvidaste tu contraseña?</string>
+    <string name="error_firebase_google_autentication">Proceso de autenticación en firebase mediante credencial de google ha fallado</string>
+    <string name="register_label">Registro</string>
+    <string name="login_pass_hint2">Repita la contraseña</string>
+    <string name="error_passwords_not_match">Las contraseñas no coinciden, por favor inténtelo de nuevo</string>
 
 </resources>

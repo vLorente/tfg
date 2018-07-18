@@ -22,9 +22,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var txtName: EditText
-    private lateinit var txtSurname: EditText
     private lateinit var txtEmail: EditText
     private lateinit var txtPassword: EditText
+    private lateinit var txtPassword2: EditText
     private lateinit var progressBar: ProgressBar
     private lateinit var database: FirebaseFirestore
     private lateinit var dbReference: CollectionReference
@@ -37,9 +37,10 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         txtName = findViewById(R.id.register_name)
-        txtSurname = findViewById(R.id.register_surname)
         txtEmail = findViewById(R.id.register_email)
         txtPassword = findViewById(R.id.register_password)
+        txtPassword = findViewById(R.id.register_password2)
+
         btbRegister = findViewById(R.id.register_button)
 
         progressBar = findViewById(R.id.progressBar)
@@ -57,26 +58,31 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun createAccount() {
         val name:String = txtName.text.toString()
-        val surname:String = txtSurname.text.toString()
         val email:String = txtEmail.text.toString()
         val password:String = txtPassword.text.toString()
+        val password2:String = txtPassword2.text.toString()
 
-        if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(surname) &&!TextUtils.isEmpty(email) &&!TextUtils.isEmpty(password) ){
+        if(!TextUtils.isEmpty(name)  &&!TextUtils.isEmpty(email) &&!TextUtils.isEmpty(password) && !TextUtils.isEmpty(password2)){
             progressBar.visibility=View.VISIBLE
 
-            val myuser = User(name,surname,email,password,null)
+            if (TextUtils.equals(password,password2)){
+                val myuser = User(name,email,null)
 
-            auth.createUserWithEmailAndPassword(email,password)
-                    .addOnCompleteListener(this){
-                        task ->
-                        if(task.isComplete){
-                            val user:FirebaseUser?=auth.currentUser
-                            verifyEmail(user)
-                            myuser.uid = auth.currentUser?.uid
-                            dbReference.add(myuser)
-                            action()
+                auth.createUserWithEmailAndPassword(email,password)
+                        .addOnCompleteListener(this){
+                            task ->
+                            if(task.isComplete){
+                                val user:FirebaseUser?=auth.currentUser
+                                verifyEmail(user)
+                                myuser.uid = auth.currentUser?.uid
+                                dbReference.document(auth.currentUser?.uid!!).set(myuser)
+                                action()
+                            }
+
                         }
-                    }
+            } else{
+                Toast.makeText(this,getString(R.string.error_passwords_not_match),Toast.LENGTH_SHORT).show()
+            }
         }else{
             Toast.makeText(this,getString(R.string.error_empty_fields),Toast.LENGTH_SHORT).show()
         }
@@ -97,6 +103,8 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 }
     }
+
+
 
 
 }
