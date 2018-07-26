@@ -2,6 +2,7 @@ package android.devs.vlorente.tfg
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -16,7 +17,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -55,13 +59,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //Listener que escucha los cambios en la atutenticación de firebase
         firebaseAuth= FirebaseAuth.getInstance()
 
+
+        val navigation: BottomNavigationView = findViewById(R.id.navigation)
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
     }
 
     override fun onStart() {
         super.onStart()
 
         val currentUser = firebaseAuth.getCurrentUser()
-        updateUI(currentUser)
+        loginCheck(currentUser)
     }
 
     override fun onBackPressed() {
@@ -88,29 +96,48 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.navigation_player ->{
+                ShowFragmentPlayer()
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_social -> {
+                ShowFragmentSocial()
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_notifications -> {
+
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
 
 
-            R.id.nav_perfil -> {
-                ShowFragmentMain()
+            R.id.nav_profile -> {
+                ShowProfileActivity()
             }
-            R.id.nav_gallery -> {
-                ShowFragmentPlayer()
-            }
-            R.id.nav_slideshow -> {
 
-            }
-            R.id.nav_manage -> {
-
-            }
             R.id.nav_config -> {
 
             }
             R.id.nav_logOut -> {
-                logOut()
+                alert(getString(R.string.close_session)) {
+                    title = "Alert"
+                    yesButton {
+                        toast("Cerrando sesión")
+                        logOut()
+                    }
+                    noButton { }
+                }.show()
+
             }
+
 
         }
 
@@ -129,17 +156,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun updateUI(user: FirebaseUser?) {
+    private fun loginCheck(user: FirebaseUser?) {
         if (user != null) {
-            ShowFragmentMain()
+            ShowFragmentPlayer()
         } else {
             ShowLoginActivity()
         }
     }
 
-    private fun ShowFragmentMain(){
+    private fun ShowFragmentSocial(){
         val transaction = manager.beginTransaction()
-        val fragment = FragmentMain()
+        val fragment = FragmentTimeLine()
         transaction.replace(R.id.fragment_holder,fragment)
         transaction.addToBackStack(null)
         transaction.commit()
@@ -151,6 +178,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         transaction.replace(R.id.fragment_holder,fragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    private fun ShowProfileActivity(){
+        val intent = Intent(this, ProfileActivity::class.java)
+        startActivity(intent)
     }
 
     private fun ShowLoginActivity(){

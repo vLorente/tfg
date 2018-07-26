@@ -1,7 +1,7 @@
 package android.devs.vlorente.tfg
 
 import android.content.Intent
-import android.devs.vlorente.tfg.Beans.User
+import android.devs.vlorente.tfg.Beans.UserBean
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
@@ -115,6 +115,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                             ShowMain()
                         }else{
                             progressBar.visibility = View.GONE
+                            txtPassword.text.clear()
                             Toast.makeText(this,getString(R.string.error_data_login), Toast.LENGTH_LONG).show()
                         }
                     }
@@ -189,7 +190,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                    // Log.d(FragmentActivity.TAG, "DocumentSnapshot data: " + document.data!!)
                 } else {
                     val user:FirebaseUser? = firebaseAuth?.currentUser
-                    val myuser = User(user?.displayName.toString(),user?.email.toString(),user?.uid)
+                    val myuser = UserBean(user?.displayName.toString(),user?.email.toString(),user?.uid)
                     dbReference.document(myuser.uid!!).set(myuser)
                 }
             } else {

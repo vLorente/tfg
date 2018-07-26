@@ -1,7 +1,7 @@
 package android.devs.vlorente.tfg
 
 import android.content.Intent
-import android.devs.vlorente.tfg.Beans.User
+import android.devs.vlorente.tfg.Beans.UserBean
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
@@ -39,7 +39,7 @@ class RegisterActivity : AppCompatActivity() {
         txtName = findViewById(R.id.register_name)
         txtEmail = findViewById(R.id.register_email)
         txtPassword = findViewById(R.id.register_password)
-        txtPassword = findViewById(R.id.register_password2)
+        txtPassword2 = findViewById(R.id.register_password2)
 
         btbRegister = findViewById(R.id.register_button)
 
@@ -49,7 +49,7 @@ class RegisterActivity : AppCompatActivity() {
         dbReference = database.collection("/Users")
         auth = FirebaseAuth.getInstance()
 
-        btbRegister.setOnClickListener { view: View? ->
+        btbRegister.setOnClickListener { _: View? ->
             createAccount()
         }
 
@@ -66,7 +66,7 @@ class RegisterActivity : AppCompatActivity() {
             progressBar.visibility=View.VISIBLE
 
             if (TextUtils.equals(password,password2)){
-                val myuser = User(name,email,null)
+                val myuser = UserBean(name,email,null)
 
                 auth.createUserWithEmailAndPassword(email,password)
                         .addOnCompleteListener(this){
@@ -81,6 +81,8 @@ class RegisterActivity : AppCompatActivity() {
 
                         }
             } else{
+                txtPassword.text.clear()
+                txtPassword2.text.clear()
                 Toast.makeText(this,getString(R.string.error_passwords_not_match),Toast.LENGTH_SHORT).show()
             }
         }else{

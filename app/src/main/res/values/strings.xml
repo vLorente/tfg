@@ -34,5 +34,6 @@
     <string name="register_label">Registro</string>
     <string name="login_pass_hint2">Repita la contraseña</string>
     <string name="error_passwords_not_match">Las contraseñas no coinciden, por favor inténtelo de nuevo</string>
+    <string name="close_session">¿Seguro que deseas cerrar la sesión?</string>
 
 </resources>

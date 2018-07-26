@@ -11,11 +11,11 @@ import android.view.ViewGroup
  * Copyright © 2017 vLorente. All rights reserved.
  */
 
-class FragmentMain : Fragment() {
+class FragmentTimeLine : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main,container,false)
+        return inflater.inflate(R.layout.fragment_time_line,container,false)
     }
 
 

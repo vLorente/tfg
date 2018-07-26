@@ -41,6 +41,14 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-auth:16.0.2'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'org.jetbrains.anko:anko-common:0.10.5'
+    implementation "org.jetbrains.anko:anko-coroutines:0.10.5"
+    implementation 'com.airbnb.android:lottie:2.5.5'
 
 
+}
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
