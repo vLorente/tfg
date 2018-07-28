@@ -3,6 +3,7 @@ package android.devs.vlorente.tfg
 import android.devs.vlorente.tfg.Beans.UserModel
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -34,6 +35,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var linear : LinearLayout
     private lateinit var relative : RelativeLayout
     private lateinit var imgHeader : ImageView
+    private lateinit var imgLogo : ImageView
     private lateinit var currentUser : FirebaseAuth
     private lateinit var db : FirebaseFirestore
     private val TAG = "ProfileActivity"
@@ -49,6 +51,7 @@ class ProfileActivity : AppCompatActivity() {
         lottie = find(R.id.profile_animation)
         linear = find(R.id.linear_profile)
         relative = find(R.id.profile_layout)
+        imgLogo = find(R.id.profile_logo_img)
         db = FirebaseFirestore.getInstance()
         currentUser = FirebaseAuth.getInstance()
 
@@ -60,8 +63,9 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         async(UI){
-            delay(2000)
+            delay(3000)
 
+            Log.i(TAG,"Termina el delay")
             if(user != null){
                 ref.invoke().displayUser(user!!)
                 ref.invoke().stopAnimation()
@@ -79,6 +83,8 @@ class ProfileActivity : AppCompatActivity() {
 
 
     private fun displayUser(user : UserModel){
+
+
         val name : String? = user.name
         val email : String? = user.email
 
@@ -93,6 +99,7 @@ class ProfileActivity : AppCompatActivity() {
         linear.visibility = View.GONE
         imgHeader.visibility = View.GONE
         relative.visibility = View.GONE
+        imgLogo.visibility = View.VISIBLE
         lottie.visibility = View.VISIBLE
 
         lottie.playAnimation()
@@ -106,6 +113,7 @@ class ProfileActivity : AppCompatActivity() {
         linear.visibility = View.VISIBLE
         imgHeader.visibility = View.VISIBLE
         relative.visibility = View.VISIBLE
+        imgLogo.visibility = View.GONE
         lottie.visibility = View.GONE
     }
 

@@ -214,7 +214,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 grantResults.forEach {
                     i ->
                     if(grantResults.isNotEmpty() && grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                        toast("Permiso $i concedidos")
+                        toast("Permisos concedidos")
                     }else {
                         toast("Permiso $i no concedidos")
                     }
