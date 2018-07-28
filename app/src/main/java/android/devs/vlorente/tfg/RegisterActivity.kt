@@ -1,7 +1,7 @@
 package android.devs.vlorente.tfg
 
 import android.content.Intent
-import android.devs.vlorente.tfg.Beans.UserBean
+import android.devs.vlorente.tfg.Beans.UserModel
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
@@ -66,7 +66,7 @@ class RegisterActivity : AppCompatActivity() {
             progressBar.visibility=View.VISIBLE
 
             if (TextUtils.equals(password,password2)){
-                val myuser = UserBean(name,email,null)
+                val myuser = UserModel(name,email,null)
 
                 auth.createUserWithEmailAndPassword(email,password)
                         .addOnCompleteListener(this){

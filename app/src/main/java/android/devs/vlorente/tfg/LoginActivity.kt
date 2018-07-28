@@ -1,8 +1,12 @@
 package android.devs.vlorente.tfg
 
+import android.Manifest
 import android.content.Intent
-import android.devs.vlorente.tfg.Beans.UserBean
+import android.content.pm.PackageManager
+import android.devs.vlorente.tfg.Beans.UserModel
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
@@ -21,9 +25,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-
-
-
+import org.jetbrains.anko.toast
 
 
 /**
@@ -49,6 +51,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     var googleApiClient: GoogleApiClient? = null
     // Firebase Auth Object.
     var firebaseAuth: FirebaseAuth? = null
+
+    private val PERMISSION_REQUEST_CODE = 12
+    private val permissionsRequired = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)
 
 
 
@@ -83,6 +88,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         registerButton.setOnClickListener { view: View? ->
             ShowRegister()
         }
+
+        setupPermissions()
 
     } //cierre onCreate
 
@@ -190,7 +197,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                    // Log.d(FragmentActivity.TAG, "DocumentSnapshot data: " + document.data!!)
                 } else {
                     val user:FirebaseUser? = firebaseAuth?.currentUser
-                    val myuser = UserBean(user?.displayName.toString(),user?.email.toString(),user?.uid)
+                    val myuser = UserModel(user?.displayName.toString(),user?.email.toString(),user?.uid)
                     dbReference.document(myuser.uid!!).set(myuser)
                 }
             } else {
@@ -198,6 +205,30 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
 
+
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == PERMISSION_REQUEST_CODE){
+            if(grantResults.isNotEmpty()){
+                grantResults.forEach {
+                    i ->
+                    if(grantResults.isNotEmpty() && grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                        toast("Permiso $i concedidos")
+                    }else {
+                        toast("Permiso $i no concedidos")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupPermissions(){
+        //Pedir permisos
+        if(ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, arrayOf(permissionsRequired[0],permissionsRequired[1]), PERMISSION_REQUEST_CODE)
+        }
     }
 
 }

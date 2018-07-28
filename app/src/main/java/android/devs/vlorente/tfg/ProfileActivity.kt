@@ -1,6 +1,6 @@
 package android.devs.vlorente.tfg
 
-import android.devs.vlorente.tfg.Beans.UserBean
+import android.devs.vlorente.tfg.Beans.UserModel
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -54,13 +54,13 @@ class ProfileActivity : AppCompatActivity() {
 
         val ref: Ref<ProfileActivity> = this.asReference()
         val docRef = db.collection("Users").document(currentUser.uid!!)
-        var user : UserBean? = null
+        var user : UserModel? = null
         docRef.get().addOnSuccessListener { documentSnapshot ->
-            user = documentSnapshot.toObject<UserBean>(UserBean::class.java)
+            user = documentSnapshot.toObject<UserModel>(UserModel::class.java)
         }
 
         async(UI){
-            delay(1400)
+            delay(2000)
 
             if(user != null){
                 ref.invoke().displayUser(user!!)
@@ -78,7 +78,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
 
-    private fun displayUser(user : UserBean){
+    private fun displayUser(user : UserModel){
         val name : String? = user.name
         val email : String? = user.email
 
