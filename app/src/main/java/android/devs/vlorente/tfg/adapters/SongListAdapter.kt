@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import org.jetbrains.anko.find
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Valentín Lorente Jiménez on 27/07/2018.
@@ -30,9 +31,16 @@ class SongListAdapter(SongModel:ArrayList<SongModel>): RecyclerView.Adapter<Song
     override fun onBindViewHolder(holder: SongListViewHolder, position: Int) {
         val model = mSongModel[position]
         val songName  = model.mSongName
-        val songDuration = model.mSongDuration
+        val songDuration = toMinuteAndSecond(model.mSongDuration.toLong())
         holder.songName.text = songName
         holder.songDuration.text = songDuration
+    }
+
+    fun toMinuteAndSecond(millis:Long): String {
+        val duration = String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(millis),
+                TimeUnit.MILLISECONDS.toSeconds(millis)-TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)))
+        return duration
     }
 
 

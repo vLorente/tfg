@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.GoogleApiClient
@@ -71,7 +70,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onStart() {
         super.onStart()
 
-        val currentUser = firebaseAuth.getCurrentUser()
+        val currentUser = firebaseAuth.currentUser
         loginCheck(currentUser)
     }
 
@@ -131,7 +130,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_logOut -> {
                 alert(getString(R.string.close_session)) {
-                    title = "Alert"
+                    title = "Cerrar sesión"
                     yesButton {
                         toast("Cerrando sesión")
                         logOut()
@@ -153,7 +152,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (status.isSuccess) {
                 ShowLoginActivity()
             } else {
-                Toast.makeText(applicationContext, R.string.not_logout_google, Toast.LENGTH_SHORT).show()
+                toast(R.string.not_logout_google)
             }
         }
     }

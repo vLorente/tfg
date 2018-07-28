@@ -210,16 +210,23 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == PERMISSION_REQUEST_CODE){
-            if(grantResults.isNotEmpty()){
+
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                toast("Permisos concedidos")
+            }
+            else{
+                toast("Permisos no concedidos")
+            }
+
+           /* if(grantResults.isNotEmpty() ){
                 grantResults.forEach {
-                    i ->
-                    if(grantResults.isNotEmpty() && grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                    if(grantResults[it] == PackageManager.PERMISSION_GRANTED){
                         toast("Permisos concedidos")
                     }else {
-                        toast("Permiso $i no concedidos")
+                        toast("Permiso $it no concedidos")
                     }
                 }
-            }
+            }*/
         }
     }
 

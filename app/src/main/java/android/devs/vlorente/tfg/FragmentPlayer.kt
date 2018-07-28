@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.jetbrains.anko.find
+import org.jetbrains.anko.toast
 
 /**
  * Created by Valentín Lorente Jiménez on 13/07/2018.
@@ -31,26 +32,36 @@ class FragmentPlayer : Fragment() {
 
         val viewRoot = inflater.inflate(R.layout.fragment_player,container,false)
         val context = this.context
-        val songCursor: Cursor? = context?.contentResolver?.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,null)
 
+        try{
+            val songCursor: Cursor? = context?.contentResolver?.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,null)
 
-
-        while (songCursor != null && songCursor.moveToNext()){
-            val songName = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
-            val songDuration = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
-            songModelData.add(SongModel(songName,songDuration))
-            Log.i(TAG,"Nombre: $songName")
+            while (songCursor != null && songCursor.moveToNext()){
+                val songName = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
+                val songDuration = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
+                songModelData.add(SongModel(songName,songDuration))
+                Log.i(TAG,"Nombre: $songName")
+            }
+        }catch (e: Exception){
+            Log.e(TAG,e.toString())
+            context?.toast("No se a podido acceder al contenido multimdia")
         }
 
-        if (songModelData.isEmpty()){
-            songModelData.add(SongModel("No se han encontrado canciones",""))
+
+
+
+
+        if (!songModelData.isEmpty()){
+            songListAdapter = SongListAdapter(songModelData)
+            val layoutManager = LinearLayoutManager(context)
+            val recyclerView = viewRoot.find(R.id.recycler_view) as RecyclerView
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = songListAdapter
+        } else {
+            context?.toast("No se han encontrado archivos multimedia")
         }
 
-        songListAdapter = SongListAdapter(songModelData)
-        val layoutManager = LinearLayoutManager(context)
-        val recyclerView = viewRoot.find(R.id.recycler_view) as RecyclerView
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = songListAdapter
+
 
         return viewRoot
     }
